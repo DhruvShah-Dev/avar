@@ -1,0 +1,17 @@
+torch
+torchvision
+torchaudio
+ultralytics
+opencv-python
+numpy
+scipy
+matplotlib
+pandas
+pyyaml
+tqdm
+loguru
+python-dotenv
+einops
+SoccerNet
+scikit-learn
+joblib
