@@ -1,98 +1,49 @@
-# Automated Video Assistant Referee (AVAR) – SoccerNet
+# AVAR: SoccerNet video analysis prototype
 
-## Project Overview
-This project implements a simplified Automated Video Assistant Referee (AVAR) pipeline for broadcast soccer videos using the SoccerNet dataset. The system focuses on three tasks:
-1. Player detection from broadcast video.
-2. Visualization through overlay videos and a tactical minimap.
-3. Foul candidate prediction using engineered proximity-based features.
+AVAR is a research prototype for analyzing broadcast soccer video with the [SoccerNet](https://www.soccer-net.org/) dataset. It combines YOLO-based player detection, simple tracking, tactical visualizations, and a proximity-feature model that proposes foul candidate windows. It does not make referee decisions.
 
-The project is designed as an end-to-end, reproducible computer vision and machine learning pipeline suitable for large-scale soccer video analysis.
+## Pipeline
 
----
+1. Detect players and save detections or tracked positions as JSON.
+2. Render bounding-box overlays or a 2D tactical minimap.
+3. Align detections with SoccerNet foul annotations to build a labeled dataset.
+4. Split data by game, train a baseline classifier, and score candidate foul windows.
+5. Consolidate nearby predictions into proposed events.
 
-## Dataset
-This project uses the **SoccerNet** dataset.
+The command-line entry point is `src/avar/cli.py`. Its subcommands cover download, tracking, detection, minimap rendering, dataset preparation, model training, and prediction.
 
-- Dataset access requires an official SoccerNet account and password.
-- Due to licensing restrictions, raw videos and annotations are **not included** in this repository.
-- Users must download the dataset separately from:
-  https://www.soccer-net.org/
+## Setup
 
-The expected directory structure after downloading SoccerNet is:
-```
-data/raw/soccernet/
-```
+Use Python and install the dependencies listed in [requirements.txt](requirements.txt). The repository uses a `src/` layout and does not include packaging metadata, so set `PYTHONPATH` when running the CLI.
 
----
+PowerShell:
 
-## Code Structure
-```
-avar/
- ├── cli.py                  # Command-line interface
- ├── detections/             # Player detection logic
- ├── fouls/                  # Foul dataset creation, training, prediction
- ├── viz/                    # Overlay and minimap visualizations
-data/
- ├── raw/                    # SoccerNet data (not included)
- ├── processed/              # Detection outputs
- ├── analytics/              # Foul datasets, splits, metrics
- ├── visualizations/         # Generated videos and figures
-models/
- ├── foul_baseline.pkl
- ├── foul_lr_split.pkl
+```powershell
+python -m pip install -r requirements.txt
+$env:PYTHONPATH = "src"
+python -m avar.cli --help
 ```
 
----
+Bash:
 
-## Pipeline Steps
-1. **Player Detection**  
-   Detect players using a YOLO-based object detector on broadcast video.
+```bash
+python -m pip install -r requirements.txt
+PYTHONPATH=src python -m avar.cli --help
+```
 
-2. **Visualization**  
-   - Overlay detected player bounding boxes on the original video.
-   - Generate a 2D tactical minimap representation.
+Run `python -m avar.cli <command> --help` after setting `PYTHONPATH` to see a command's required inputs and output options. Video processing is compute intensive; a supported GPU can speed up detection.
 
-3. **Foul Dataset Construction**  
-   Align player detections with SoccerNet foul annotations to build a supervised dataset.
+## Dataset and outputs
 
-4. **Model Training and Evaluation**  
-   Train a baseline logistic regression classifier using proximity-based features and evaluate using a game-level train/validation/test split.
+SoccerNet videos and annotations are **not included** here. Obtain access through the [official SoccerNet site](https://www.soccer-net.org/) and follow its terms. The pipeline expects downloaded data under `data/raw/soccernet/`. Generated data, models, images, and videos are excluded from Git, so outputs must be recreated locally.
 
-5. **Foul Prediction**  
-   Generate frame-level foul probabilities and post-process them into temporal foul event candidates.
+## Method and limits
 
----
-
-## Hardware Requirements
-- CPU > i5
-- GPU (any)
-
-## Requirements
-- Python 3.8+
-- PyTorch
-- OpenCV
-- NumPy, Pandas, Scikit-learn
-- Ultralytics YOLO
-
-Exact package versions are listed in the environment setup used during development.
-
----
-
-## Reproducibility Notes
-- Detection outputs are cached to avoid repeated video processing.
-- Dataset splits are performed **by game** to prevent data leakage.
-- All experiments can be reproduced using the provided CLI commands once SoccerNet data is available.
-
----
-
-## Limitations
-- Camera calibration and metric pitch projection are approximated.
-- Foul prediction relies on weak supervision and engineered features.
-- The system is intended as a research prototype, not a production referee system.
-
----
+- Game-level train, validation, and test splits reduce leakage between matches.
+- Camera calibration and pitch projection are approximations.
+- Foul candidates use weak supervision and engineered proximity features. A candidate score does not establish that a foul occurred.
+- Performance depends on the licensed dataset, detection quality, and hardware.
 
 ## Author
-Dhruv Shah  
-Department of Computer Science  
-Binghamton University (SUNY)
+
+Dhruv Shah · Binghamton University
