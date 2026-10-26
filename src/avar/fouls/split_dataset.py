@@ -70,6 +70,11 @@ def split_by_game(
         raise RuntimeError("Master CSV is empty.")
 
     _require_cols(df, ["league", "season", "game", "half", "label"])
+    if df[["league", "season", "game", "half", "label"]].isna().any().any():
+        raise ValueError("Split keys and labels must not be missing")
+    df["label"] = pd.to_numeric(df["label"], errors="raise")
+    if not df["label"].isin([0, 1]).all():
+        raise ValueError("Foul labels must be 0 or 1")
 
     df["league"] = df["league"].astype(str)
     df["season"] = df["season"].astype(str)
@@ -78,6 +83,14 @@ def split_by_game(
     # Use existing game_id if present
     if "game_id" not in df.columns:
         df["game_id"] = df["league"] + "///" + df["season"] + "///" + df["game"]
+    key_columns = ["game_id", "half", "center_frame"] if "center_frame" in df else []
+    quality = {
+        "rows": len(df),
+        "games": int(df["game_id"].nunique()),
+        "missing_values": {column: int(count) for column, count in df.isna().sum().items() if count},
+        "duplicate_window_keys": int(df.duplicated(key_columns).sum()) if key_columns else None,
+        "foul_label_share": round(float(df["label"].mean()), 4),
+    }
 
     g = (
         df.groupby("game_id")["label"]
@@ -151,6 +164,7 @@ def split_by_game(
 
     manifest = {
         "master_csv": str(master_csv),
+        "quality": quality,
         "seed": seed,
         "ratios": {"train": train_ratio, "valid": valid_ratio, "test": test_ratio},
         "used_stratification": used_stratification,

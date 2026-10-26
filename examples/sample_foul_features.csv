@@ -1,0 +1,13 @@
+league,season,game,half,center_frame,label,min_pair_dist
+ExampleLeague,2026,Game-A,1,100,0,0.24
+ExampleLeague,2026,Game-A,1,200,1,0.06
+ExampleLeague,2026,Game-B,1,100,0,0.31
+ExampleLeague,2026,Game-B,1,200,1,0.05
+ExampleLeague,2026,Game-C,1,100,0,0.18
+ExampleLeague,2026,Game-C,1,200,1,0.08
+ExampleLeague,2026,Game-D,1,100,0,0.29
+ExampleLeague,2026,Game-D,1,200,1,0.07
+ExampleLeague,2026,Game-E,1,100,0,0.21
+ExampleLeague,2026,Game-E,1,200,1,0.06
+ExampleLeague,2026,Game-F,1,100,0,0.27
+ExampleLeague,2026,Game-F,1,200,1,0.09

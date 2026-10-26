@@ -37,6 +37,8 @@ Run `python -m avar.cli <command> --help` after setting `PYTHONPATH` to see a co
 
 SoccerNet videos and annotations are **not included** here. Obtain access through the [official SoccerNet site](https://www.soccer-net.org/) and follow its terms. The pipeline expects downloaded data under `data/raw/soccernet/`. Generated data, models, images, and videos are excluded from Git, so outputs must be recreated locally.
 
+For a small, license-safe example of the feature table and split quality report, see [examples](examples/README.md).
+
 ## Method and limits
 
 - Game-level train, validation, and test splits reduce leakage between matches.
